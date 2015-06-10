@@ -3,15 +3,12 @@
 from socket import *
 from threading import Thread
 from enum import Enum
+from getopt import *
 import sys
 
-def usage():
-    print("Modo de uso:\t %s T_MSG TYPE" % sys.argv[0])
-    print("Padrão:\t\t %s 10 TCP" % sys.argv[0])
-
 class SocketType(Enum):
-    TCP = 1
-    UDP = 2
+    TCP = tcp = 1
+    UDP = udp = 2
 
 class Server():
     def __init__(self, address, port, msg_size=10, s_type=SocketType.TCP):
@@ -73,25 +70,39 @@ class Server():
             n_msg -= 1
             self.socket.sendto(self.msg, client_address)
 
+def usage():
+    print("Modo de uso:\t %s -s tam_msg -t tipo_socket" % sys.argv[0])
 
 if __name__ == '__main__':
-    try:
-        if int(sys.argv[1]) <= 0:
-            raise ValueError
-        s = Server("127.0.0.1", 45000, int(sys.argv[1]), SocketType[sys.argv[2]])
-    except ValueError:
-        print("%s não é um inteiro positivo!" % sys.argv[1], file=sys.stderr) 
-        usage()
-        sys.exit(1)
-    except KeyError:
-        usage()
-        print("%s não é um tipo de socket válido! (deve ser TCP ou UDP)" % sys.argv[2])
-        sys.exit(1)
-    except IndexError:
-        if len(sys.argv) == 2:
-            s = Server("127.0.0.1", 45000, int(sys.argv[1]))
-        else:
-            s = Server("127.0.0.1", 45000)
+    server_args = dict()
 
+    try:
+        opts, args = getopt(sys.argv[1:], "s:t:")
+        if args:
+            raise GetoptError("Argumentos inválidos")
+    except GetoptError as e:
+        print(e)
+        usage()
+        sys.exit(1)
+    for o, a in opts:
+        if o == "-s":
+            try:
+                a = int(a)
+                server_args["msg_size"] = a
+                if a <= 0:
+                    raise ValueError
+            except ValueError:
+                print("%s deve ser um inteiro positivo." % a, file=sys.stderr) 
+                usage()
+                sys.exit(1)
+        if o == "-t":
+            try:
+                server_args["s_type"] = SocketType[a]
+            except KeyError:
+                print("%s não é um tipo de socket válido" % a, file=sys.stderr)
+                usage()
+                sys.exit(2)
+    
+    s = Server("127.0.0.1", 45000, **server_args) 
     s.bind()
     s.run()
