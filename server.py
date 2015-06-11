@@ -73,14 +73,14 @@ class Server():
         print("## THREAD %s: concluído!" % thread_n)
 
 def usage():
-    print("Modo de uso:\t %s -s tam_msg -t tipo_socket" % sys.argv[0])
+    print("Modo de uso:\n %s -s tam_msg -t tipo_socket\n\n" % sys.argv[0])
 
 if __name__ == '__main__':
     server_args = dict()
 
     try:
         opts, args = getopt(sys.argv[1:], "s:t:")
-        if args:
+        if args or len(opts) == 0:
             raise GetoptError("Argumentos inválidos")
     except GetoptError as e:
         print(e)
