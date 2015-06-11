@@ -45,7 +45,6 @@ class Server():
         else:
             while True:
                 n_msg, client_address = self.socket.recvfrom(1024) 
-                print("oi...")
                 n_msg = int(n_msg)
                 t_args = (n_msg, client_address, self.thread_cnt)
                 t = Thread(target=self.send_msgs_udp, args=t_args)
@@ -66,9 +65,12 @@ class Server():
         print("## THREAD %s: concluído!" % thread_n)
 
     def send_msgs_udp(self, n_msg, client_address, thread_n):
+        info = (thread_n, n_msg, client_address[0])
+        print("## THREAD %s: enviando %s mensagens para %s" % info)
         while n_msg > 0:
             n_msg -= 1
             self.socket.sendto(self.msg, client_address)
+        print("## THREAD %s: concluído!" % thread_n)
 
 def usage():
     print("Modo de uso:\t %s -s tam_msg -t tipo_socket" % sys.argv[0])
