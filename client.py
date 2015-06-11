@@ -26,7 +26,7 @@ class Client():
         else:
             self.socket = socket(AF_INET, SOCK_DGRAM)
         self.socket.settimeout(1)
-    
+
     def request_msg(self, n_msg):
         self.it = n_msg
         n_msg = str(n_msg)
@@ -46,21 +46,23 @@ class Client():
                     msg = self.socket.recvfrom(self.msg_size) 
         except timeout:
             print("Erro de Timeout!")
-            print("%s mensagens restantes" % self.it)
+            print("%s mensagens não recebidas" % self.it)
             sys.exit(5)
         end = time.time()
         elapsed_time = end - start
         n_msg = str(n_msg, "utf-8")
         print("%s" % elapsed_time)
-    
 
+def usage():
+    print("Modo de uso:\n %s -s tam_msg -t tipo_socket -n num_msgs\n\n" % sys.argv[0])    
+    
 if __name__ == '__main__':
     client_args = dict()
 
     n_msg = 10
     try:
         opts, args = getopt(sys.argv[1:], "s:t:n:")
-        if args:
+        if args or len(opts) == 0:
             raise GetoptError("Argumentos inválidos")
     except GetoptError as e:
         print(e)
