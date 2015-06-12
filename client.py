@@ -33,11 +33,11 @@ class Client():
         n_msg = bytes(n_msg, 'utf-8')
         start = time.time()
         try:
-            if self.s_type == SocketType.TCP:
+            if self.s_type == SocketType.UDP:
                 self.socket.sendall(n_msg)
                 while self.it:
                     self.it -= 1
-                    msg = self.socket.recv(1024) 
+                    msg = self.socket.recv(self.msg_size) 
             else:
                 addr = (self.server_address, self.port)
                 self.socket.sendto(n_msg, addr)
@@ -45,8 +45,9 @@ class Client():
                     self.it -= 1
                     msg = self.socket.recvfrom(self.msg_size) 
         except timeout:
-            print("Erro de Timeout!")
-            print("%s mensagens não recebidas" % self.it)
+            print("Erro de Timeout!", file=sys.stderr)
+            print(self.it)
+            print("%s mensagens não recebidas" % self.it, file=sys.stderr)
             sys.exit(5)
         end = time.time()
         elapsed_time = end - start
