@@ -12,9 +12,9 @@ class SocketType(Enum):
     UDP = udp = 2
 
 class Client():
-    def __init__(self, server_address, port, msg_size=10, s_type=SocketType.TCP):
+    def __init__(self, server_address, server_port, msg_size=10, s_type=SocketType.TCP):
         self.server_address = server_address
-        self.port = port
+        self.server_port = server_port
         self.msg_size = msg_size
         self.s_type = s_type
 
@@ -33,13 +33,13 @@ class Client():
         n_msg = bytes(n_msg, 'utf-8')
         start = time.time()
         try:
-            if self.s_type == SocketType.UDP:
+            if self.s_type == SocketType.TCP:
                 self.socket.sendall(n_msg)
                 while self.it:
                     self.it -= 1
                     msg = self.socket.recv(self.msg_size) 
             else:
-                addr = (self.server_address, self.port)
+                addr = (self.server_address, self.server_port)
                 self.socket.sendto(n_msg, addr)
                 while self.it:
                     self.it -= 1
